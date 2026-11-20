@@ -1,0 +1,5 @@
+scripts:
+  - name: Set higher screen resolution
+    script: |
+      brew install displayplacer
+      displayplacer "id:1 res:1920x1080 hz:60 color_depth:8 scaling:off"
