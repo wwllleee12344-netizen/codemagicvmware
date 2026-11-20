@@ -1,9 +1,33 @@
 workflows:
-  default-workflow:
-    name: Default Workflow
+  unity-macos-build:
+    name: Build BPLE for macOS
     instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      vars:
+        UNITY_VERSION: "2021.3.45f2"
+        UNITY_CHANGESET: "96003025216f"
+        GDRIVE_FILE_ID: "1uhAwupklmfvXiODQgNnl02fUDHfEnDPl"
     scripts:
-      - name: Set screen resolution
+      - name: Set display to 1920x1080
         script: |
-          brew install displayplacer
-          displayplacer "id:1 res:1440x900 hz:60 color_depth:8 scaling:off"
+          HOMEBREW_NO_AUTO_UPDATE=1 brew install displayplacer
+          SCREEN_ID=$(displayplacer list | awk '/Persistent screen id:/ {print $4; exit}')
+          displayplacer "id:$SCREEN_ID res:1920x1080 hz:60 color_depth:8 scaling:off"
+
+      - name: Download and unzip BPLE from Google Drive
+        script: |
+          pip3 install gdown
+          gdown --id $GDRIVE_FILE_ID -O BPLE.zip
+          unzip -q BPLE.zip -d "$CM_BUILD_DIR/BPLE"
+
+      - name: Install Unity 2021.3.45f2
+        script: |
+          /Applications/Unity\ Hub.app/Contents/MacOS/Unity\ Hub -- --headless install \
+            --version $UNITY_VERSION \
+            --changeset $UNITY_CHANGESET \
+            --module mac-il2cpp
+
+      - name: Keep VM alive for VNC session (optional)
+        script: |
+          sleep 3600
