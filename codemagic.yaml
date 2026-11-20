@@ -1,5 +1,9 @@
-scripts:
-  - name: Set higher screen resolution
-    script: |
-      brew install displayplacer
-      displayplacer "id:1 res:1920x1080 hz:60 color_depth:8 scaling:off"
+workflows:
+  default-workflow:
+    name: Default Workflow
+    instance_type: mac_mini_m2
+    scripts:
+      - name: Set screen resolution
+        script: |
+          brew install displayplacer
+          displayplacer "id:1 res:1440x900 hz:60 color_depth:8 scaling:off"
